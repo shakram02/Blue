@@ -3,6 +3,8 @@ import org.junit.Assert
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
+import shakram02.blue.BlueClient
+import shakram02.blue.BlueServer
 import java.nio.ByteBuffer
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -56,7 +58,6 @@ class BlueClientTest {
         socket.close()
         Assert.assertTrue(hasConnected)
         Assert.assertTrue(received.isNotEmpty())
-        Assert.assertTrue(false)
     }
 
     private fun waitNetworkOperation(){
