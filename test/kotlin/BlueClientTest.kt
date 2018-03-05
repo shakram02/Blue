@@ -56,6 +56,7 @@ class BlueClientTest {
         socket.close()
         Assert.assertTrue(hasConnected)
         Assert.assertTrue(received.isNotEmpty())
+        Assert.assertTrue(false)
     }
 
     private fun waitNetworkOperation(){
