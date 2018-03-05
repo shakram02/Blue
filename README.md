@@ -1,4 +1,7 @@
 # Blue
+[![Build Status](https://travis-ci.org/shakram02/Blue.svg?branch=master)](https://travis-ci.org/shakram02/Blue)
+[![](https://jitpack.io/v/shakram02/Blue.svg)](https://jitpack.io/#shakram02/Blue)
+
 An asynchronous networking library that just works
 
 
