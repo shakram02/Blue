@@ -19,13 +19,15 @@ class BlueServer : Closeable {
     }
 
     private val readHandler = HandlerUtils.toHandler { count: Int, client: ConnectedClient ->
-        if (count == -1) {
-            client.channel.close()
+        if (count <= 0) {
+            clients.remove(client.id)
+            onClosed(client)
             return@toHandler
         }
 
         val bytes = ByteArray(count)
-        readBuffer.get(bytes, 0, 0)
+        readBuffer.flip()
+        readBuffer.get(bytes, 0, count)
 
         onReceived(OnDataReceivedEventArgs(client.channel, bytes))
         readNext(client)
@@ -40,6 +42,7 @@ class BlueServer : Closeable {
     }
 
     val onConnected = PooledEvent<AsynchronousSocketChannel>()
+    val onClosed = PooledEvent<ConnectedClient>()
     val onReceived = PooledEvent<OnDataReceivedEventArgs>()
 
     @Throws(IOException::class)
@@ -61,12 +64,11 @@ class BlueServer : Closeable {
     override fun close() {
         try {
             channel.close()
+            for (c in this.clients.values.filter { c -> c.isOpen }) {
+                c.close()
+            }
         } catch (e: AsynchronousCloseException) {
             e.printStackTrace()
-        }
-
-        for (c in this.clients.values) {
-            c.close()
         }
     }
 }
