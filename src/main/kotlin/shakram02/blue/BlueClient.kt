@@ -46,7 +46,11 @@ class BlueClient : Closeable {
 
     @Throws(IOException::class)
     override fun close() {
+        if (!this.channel.isOpen) return
+
         try {
+            this.channel.shutdownOutput()
+            this.channel.shutdownOutput()
             this.channel.close()
         } catch (e: AsynchronousCloseException) {
             e.printStackTrace()
