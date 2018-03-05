@@ -6,6 +6,7 @@ import org.junit.runners.MethodSorters
 import shakram02.blue.BlueClient
 import shakram02.blue.BlueServer
 import java.nio.ByteBuffer
+import java.nio.channels.AsynchronousCloseException
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class BlueClientTest {
@@ -22,7 +23,11 @@ class BlueClientTest {
 
     @After
     fun teardown() {
-        server.close()
+        try {
+            server.close()
+        } catch (e: AsynchronousCloseException) {
+            // TODO checkout how to make sure that both sides close gracefully
+        }
     }
 
     @org.junit.Test
@@ -36,7 +41,11 @@ class BlueClientTest {
 
         waitNetworkOperation()
         Assert.assertTrue(hasConnected)
-        socket.close()
+        try {
+            socket.close()
+        } catch (e: AsynchronousCloseException) {
+
+        }
     }
 
     @Test
@@ -55,12 +64,16 @@ class BlueClientTest {
         socket.send("Hello world".toByteArray())
         waitNetworkOperation()
 
-        socket.close()
         Assert.assertTrue(hasConnected)
         Assert.assertTrue(received.isNotEmpty())
+        try {
+            socket.close()
+        } catch (e: AsynchronousCloseException) {
+
+        }
     }
 
-    private fun waitNetworkOperation(){
+    private fun waitNetworkOperation() {
         Thread.sleep(20)
     }
 }
