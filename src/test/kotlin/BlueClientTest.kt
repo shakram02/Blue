@@ -11,26 +11,33 @@ import java.nio.channels.AsynchronousCloseException
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 class BlueClientTest {
     private val server = BlueServer()
+    private var serverRead = 0
+    private var serverExpectedRead = 0
 
     @org.junit.Before
     fun setup() {
         server.onConnected += { ch ->
-            System.err.println("Client connected ${ch.remoteAddress}")
-            ch.write(ByteBuffer.wrap("asdsad".toByteArray())).get()
+            System.err.println("Client connected")
+            val helloMsg = "Hey, Client!".toByteArray()
+            ch.write(ByteBuffer.wrap(helloMsg)).get()
         }
 
         server.onReceived += { connectedClient ->
-            System.err.println("${connectedClient.channel.remoteAddress} sent ${String(connectedClient.bytes)}")
+            val received = connectedClient.bytes
+            serverRead += received.size
+            System.err.println("Received: ${String(received)}")
         }
 
         server.start("localhost", 60001)
+        waitNetworkOperation()  // Wait for Server to start
     }
 
     @After
     fun teardown() {
         try {
-            server.close()
+            Assert.assertEquals(serverExpectedRead, serverRead)
             waitNetworkOperation()
+            server.close()
         } catch (e: AsynchronousCloseException) {
             // TODO checkout how to make sure that both sides close gracefully
         }
@@ -38,8 +45,6 @@ class BlueClientTest {
 
     @org.junit.Test
     fun aConnect() {
-        waitNetworkOperation()  // Wait for Server to start
-
         val socket = BlueClient()
         var hasConnected = false
         socket.onConnected += { hasConnected = true }
@@ -47,17 +52,10 @@ class BlueClientTest {
 
         waitNetworkOperation()
         Assert.assertTrue(hasConnected)
-        try {
-            socket.close()
-        } catch (e: AsynchronousCloseException) {
-
-        }
     }
 
     @Test
     fun bRead() {
-        waitNetworkOperation()
-
         val socket = BlueClient()
         var hasConnected = false
         var received = ""
@@ -67,19 +65,16 @@ class BlueClientTest {
         socket.connect("localhost", 60001)
         waitNetworkOperation()
 
-        socket.send("Hello world".toByteArray())
+        val msg = "Hello world".toByteArray()
+        socket.send(msg)
+        serverExpectedRead += msg.size
         waitNetworkOperation()
 
         Assert.assertTrue(hasConnected)
         Assert.assertTrue(received.isNotEmpty())
-        try {
-            socket.close()
-        } catch (e: AsynchronousCloseException) {
-
-        }
     }
 
     private fun waitNetworkOperation() {
-        Thread.sleep(20)
+        Thread.sleep(200)
     }
 }
