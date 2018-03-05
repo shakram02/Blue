@@ -1,3 +1,6 @@
+package shakram02.blue
+
+import shakram02.events.Event
 import java.io.Closeable
 import java.io.IOException
 import java.net.InetSocketAddress
@@ -6,8 +9,9 @@ import java.nio.ByteBuffer.allocateDirect
 import java.nio.channels.AsynchronousCloseException
 import java.nio.channels.AsynchronousSocketChannel
 
+
 class BlueClient : Closeable {
-    private val readHandler = HandlerUtils.toHandler { byteCount: Int, b: Nothing? -> finishRead(byteCount) }
+    private val readHandler = HandlerUtils.toHandler { byteCount: Int, _: Nothing? -> finishRead(byteCount) }
     private val writeHandler = HandlerUtils.toHandler { x: Int?, _: Nothing? -> onSent(x!!) }
     private val onConnectHandler = HandlerUtils.toHandler({ _: Void?, _: Nothing? ->
         run { onConnected(Unit); readNext() }
