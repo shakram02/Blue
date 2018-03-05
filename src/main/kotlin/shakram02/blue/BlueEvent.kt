@@ -1,3 +1,5 @@
+package shakram02.blue
+
 import java.nio.channels.AsynchronousSocketChannel
 
 data class OnNewClientEventArgs(val channel: AsynchronousSocketChannel, val clientId: Int)
