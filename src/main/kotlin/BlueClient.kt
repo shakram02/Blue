@@ -20,12 +20,7 @@ class BlueClient : Closeable {
     val onSent = Event<Int>()
     val onConnected = Event<Unit>()
 
-    init {
-
-    }
-
     fun connect(ip: String, port: Int) {
-        // TODO set time limit
         channel.connect(InetSocketAddress(ip, port), null, onConnectHandler)
     }
 
@@ -37,6 +32,7 @@ class BlueClient : Closeable {
 
     fun send(bytes: ByteArray) {
         val wb = ByteBuffer.wrap(bytes)
+        // Replace null with attachment object
         channel.write(wb, null, writeHandler)
     }
 

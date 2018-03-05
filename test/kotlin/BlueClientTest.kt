@@ -25,27 +25,41 @@ class BlueClientTest {
 
     @org.junit.Test
     fun aConnect() {
+        waitNetworkOperation()  // Wait for Server to start
+
         val socket = BlueClient()
         var hasConnected = false
         socket.onConnected += { hasConnected = true }
         socket.connect("localhost", 60001)
 
-        Thread.sleep(200)
+        waitNetworkOperation()
         Assert.assertTrue(hasConnected)
         socket.close()
     }
 
     @Test
     fun bRead() {
+        waitNetworkOperation()
+
         val socket = BlueClient()
         var hasConnected = false
         var received = ""
         socket.onConnected += { hasConnected = true }
         socket.onReceived += { b -> received = String(b) }
-        socket.connect("localhost", 60001)
 
-        Thread.sleep(200)
+        socket.connect("localhost", 60001)
+        waitNetworkOperation()
+
+        socket.send("Hello world".toByteArray())
+        waitNetworkOperation()
+
+        socket.close()
         Assert.assertTrue(hasConnected)
         Assert.assertTrue(received.isNotEmpty())
+        Assert.assertTrue(false)
+    }
+
+    private fun waitNetworkOperation(){
+        Thread.sleep(20)
     }
 }
