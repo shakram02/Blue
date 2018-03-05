@@ -43,7 +43,7 @@ class BlueClientTest {
         socket.onConnected += { hasConnected = true }
         socket.onReceived += { b -> received = String(b) }
         socket.connect("localhost", 60001)
-
+        socket.send("Hello world".toByteArray())
         Thread.sleep(200)
         Assert.assertTrue(hasConnected)
         Assert.assertTrue(received.isNotEmpty())
