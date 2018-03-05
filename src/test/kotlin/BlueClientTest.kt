@@ -14,17 +14,23 @@ class BlueClientTest {
 
     @org.junit.Before
     fun setup() {
-        server.start("localhost", 60001)
         server.onConnected += { ch ->
             System.err.println("Client connected ${ch.remoteAddress}")
             ch.write(ByteBuffer.wrap("asdsad".toByteArray())).get()
         }
+
+        server.onReceived += { connectedClient ->
+            System.err.println("${connectedClient.channel.remoteAddress} sent ${String(connectedClient.bytes)}")
+        }
+
+        server.start("localhost", 60001)
     }
 
     @After
     fun teardown() {
         try {
             server.close()
+            waitNetworkOperation()
         } catch (e: AsynchronousCloseException) {
             // TODO checkout how to make sure that both sides close gracefully
         }

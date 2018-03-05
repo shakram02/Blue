@@ -19,13 +19,14 @@ class BlueServer : Closeable {
     }
 
     private val readHandler = HandlerUtils.toHandler { count: Int, client: ConnectedClient ->
-        if (count == -1) {
+        if (count >= 0) {
             client.channel.close()
             return@toHandler
         }
 
         val bytes = ByteArray(count)
-        readBuffer.get(bytes, 0, 0)
+        readBuffer.flip()
+        readBuffer.get(bytes, 0, count)
 
         onReceived(OnDataReceivedEventArgs(client.channel, bytes))
         readNext(client)
