@@ -25,11 +25,7 @@ class BlueServer : Closeable {
             return@toHandler
         }
 
-        val bytes = ByteArray(count)
-        readBuffer.flip()
-        readBuffer.get(bytes, 0, count)
-
-        onReceived(OnDataReceivedEventArgs(client.channel, bytes))
+        onReceived(OnDataReceivedEventArgs(client.channel, HandlerUtils.read(readBuffer).toByteArray()))
         readNext(client)
     }
 
