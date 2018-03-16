@@ -6,7 +6,6 @@ import java.nio.ByteBuffer
 
 class BlueServerTest {
     private var serverRead = 0
-    private var serverExpectedRead = 0
     private val serverMessage = "Hey, Client!"
     private val clientMessage = "Hello world"
 
