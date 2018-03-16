@@ -1,10 +1,10 @@
+package shakram02.blue
+
 import org.junit.After
 import org.junit.Assert
 import org.junit.FixMethodOrder
 import org.junit.Test
 import org.junit.runners.MethodSorters
-import shakram02.blue.BlueClient
-import shakram02.blue.BlueServer
 import java.nio.ByteBuffer
 import java.nio.channels.AsynchronousCloseException
 
@@ -75,6 +75,6 @@ class BlueClientTest {
     }
 
     private fun waitNetworkOperation() {
-        Thread.sleep(200)
+        Thread.sleep(300)
     }
 }
