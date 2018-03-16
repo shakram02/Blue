@@ -11,13 +11,13 @@ import java.nio.channels.AsynchronousSocketChannel
 
 
 class BlueClient : Closeable {
-    private val readHandler = HandlerUtils.toHandler { byteCount: Int, bytes: ByteArray? ->
-        onReceived(bytes!!);
-        finishRead(byteCount)
-    }
-
+    private val readHandler = HandlerUtils.toHandler { byteCount: Int, _: Nothing? -> finishRead(byteCount) }
     private val writeHandler = HandlerUtils.toHandler { _: Int?, bytes: ByteArray? -> onSent(bytes!!) }
-    private val onConnectHandler = HandlerUtils.toHandler({ _: Void?, _: Nothing? -> onConnected(Unit) })
+    private val onConnectHandler = HandlerUtils.toHandler({ _: Void?, _: Nothing? ->
+        onConnected(Unit)
+        // Read once the connection is established
+        channel.read(rb, null, readHandler)
+    })
 
     private val rb = allocateDirect(1024)
     private val channel: AsynchronousSocketChannel = AsynchronousSocketChannel.open()
@@ -29,7 +29,7 @@ class BlueClient : Closeable {
 
     fun connect(ip: String, port: Int) {
         channel.connect(InetSocketAddress(ip, port), null, onConnectHandler)
-        channel.read(rb, null, readHandler)
+
     }
 
     private fun finishRead(byteCount: Int) {
@@ -39,8 +39,8 @@ class BlueClient : Closeable {
         }
 
         val bytes = HandlerUtils.read(rb).toByteArray()
-        onReceived(bytes)
-        channel.read(rb, bytes, readHandler)
+        channel.read(rb, null, readHandler)
+        onReceived(bytes!!)
     }
 
     fun send(bytes: ByteArray) {
