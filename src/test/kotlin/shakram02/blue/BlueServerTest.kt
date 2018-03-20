@@ -17,7 +17,7 @@ class BlueServerTest {
         server.onConnected += { ch ->
             System.err.println("Client connected")
             val helloMsg = serverMessage.toByteArray()
-            ch.write(ByteBuffer.wrap(helloMsg)).get()
+            ch.channel.write(ByteBuffer.wrap(helloMsg)).get()
         }
 
         server.onReceived += { receivedEventArgs ->
