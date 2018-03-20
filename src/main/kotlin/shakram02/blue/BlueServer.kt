@@ -10,7 +10,7 @@ import java.nio.channels.AsynchronousServerSocketChannel
 import java.nio.channels.AsynchronousSocketChannel
 
 class BlueServer : Closeable {
-    private var channel: AsynchronousServerSocketChannel = AsynchronousServerSocketChannel.open()
+    private val channel: AsynchronousServerSocketChannel = AsynchronousServerSocketChannel.open()
     private val clients = mutableMapOf<Int, AsynchronousSocketChannel>()
     private val readBuffer = ByteBuffer.allocate(1024)
 
@@ -21,7 +21,7 @@ class BlueServer : Closeable {
     private val readHandler = HandlerUtils.toHandler { count: Int, client: ConnectedClient ->
         if (count <= 0) {
             clients.remove(client.id)
-            onClosed(client)
+            onClosed(OnClientStateChangedEventArgs(client.channel, client.id))
             return@toHandler
         }
 
@@ -33,12 +33,12 @@ class BlueServer : Closeable {
         clients[id] = channel
         channel.read(readBuffer, ConnectedClient(id, channel), readHandler) // Read incoming messages
 
-        onConnected(channel)
+        onConnected(OnClientStateChangedEventArgs(channel, id))
         acceptNext()
     }
 
-    val onConnected = PooledEvent<AsynchronousSocketChannel>()
-    val onClosed = PooledEvent<ConnectedClient>()
+    val onConnected = PooledEvent<OnClientStateChangedEventArgs>()
+    val onClosed = PooledEvent<OnClientStateChangedEventArgs>()
     val onReceived = PooledEvent<OnDataReceivedEventArgs>()
 
     @Throws(IOException::class)
@@ -60,9 +60,7 @@ class BlueServer : Closeable {
     override fun close() {
         try {
             channel.close()
-            for (c in this.clients.values.filter { c -> c.isOpen }) {
-                c.close()
-            }
+            this.clients.values.filter { c -> c.isOpen }.map { it.close() }
         } catch (e: AsynchronousCloseException) {
             e.printStackTrace()
         }
