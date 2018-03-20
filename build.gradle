@@ -21,7 +21,7 @@ apply plugin: 'idea'
 apply plugin: 'maven'
 
 group = 'com.github.shakram02'
-version = '0.0.2'
+version = '0.0.3'
 
 repositories {
     mavenCentral()
