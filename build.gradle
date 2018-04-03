@@ -29,7 +29,6 @@ repositories {
 
 dependencies {
     compile 'com.github.shakram02:Kt-Events:v0.0.1'
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8:$kotlin_version"
     testCompile 'junit:junit:4.1.12'
     testCompile "org.jetbrains.kotlin:kotlin-test-junit:$kotlin_version"
 }
