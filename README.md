@@ -5,9 +5,32 @@
 An asynchronous networking library that just works
 
 
-### Use cases
+### How to Use
 
-Connect a client
+You can check out the `test` directory for full use cases
+
+#### Create a server
+Setup event handlers for the server then start it providing the `IP` and `Port`
+
+```Kotlin
+val server = BlueServer()
+server.onConnected += { ch -> 
+    System.err.println("Client connected")
+    ch.channel.write(ByteBuffer.wrap("Hello!")).get() 
+    }
+
+
+server.onReceived += { receivedEventArgs ->
+    serverRead += receivedEventArgs.bytes.size
+    received = String(receivedEventArgs.bytes)
+    println("Server received:$received")
+    }
+
+server.start("localhost", 60001)
+```
+
+#### Connect a client
+Connect to a server using `IP` and `Port` then send messages
 
 ```Kotlin
 
