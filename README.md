@@ -33,6 +33,19 @@ server.start("localhost", 60001)
 Connect to a server using `IP` and `Port` then send messages
 
 ```Kotlin
+val server = BlueServer()
+server.onConnected += { ch ->
+    System.err.println("Client connected")
+    val helloMsg = "Hey, Client!".toByteArray()
+    ch.write(ByteBuffer.wrap(helloMsg)).get()
+}
+
+server.onReceived += { connectedClient ->
+    val received = connectedClient.bytes
+    System.out.println("Received: ${String(received)}")
+}
+
+server.start("localhost", 60001)
 
 val client = BlueClient()
 
@@ -44,3 +57,6 @@ client.onReceived += { b:ByteArray -> /*your code here*/ }
 client.connect("localhost", 6001)
 client.send("Hello World!".toByteArray())
 ```
+
+Check the `tests/kotlin` for more info.
+
